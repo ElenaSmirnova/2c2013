@@ -1,0 +1,187 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <algorithm>
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <string>
+#include <set>
+#include <map>
+#include <cassert>
+#include <ctime>
+
+
+using namespace std;
+
+#ifdef WIN32
+    #define LLD "%I64d"
+#else
+    #define LLD "%lld"
+#endif
+
+typedef pair<int, int> pii;
+typedef long long ll;
+typedef vector<int> vi;
+typedef vector<vi> vvi;
+typedef vector<bool> vb;
+typedef vector<vb> vvb;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+
+ll rdtsc() {
+    ll tmp;
+    asm("rdtsc" : "=A"(tmp));
+    return tmp;
+}
+
+inline int myrand() {
+	return abs((rand() << 15) ^ rand());
+}
+
+inline int rnd(int x) {
+	return myrand() % x;
+}
+
+#define TASKNAME "text"
+#define pb push_back
+#define mp make_pair
+#define EPS (1e-9)
+#define INF ((int)1e9)
+#define sqr(x) ((x) * (x))         
+#define eprintf(...) fprintf(stderr, __VA_ARGS__)
+#define sz(x) ((int)(x).size())
+
+struct Point {
+	double x, y;
+
+	int read() {
+		int ok = scanf("%lf%lf", &x, &y);
+		return ok == 2;
+	}
+
+	void print() const {
+		printf("%.3lf %.3lf\n", x, y);
+	}
+
+	Point() : x(0), y(0) {}
+	Point(double _x, double _y) : x(_x), y(_y) {}
+
+	inline Point operator + (const Point &p) const {
+		return Point(x + p.x, y + p.y);
+	}
+
+	inline Point operator - (const Point &p) const {
+		return Point(x - p.x, y - p.y);
+	}
+
+	inline Point operator * (const double k) const {
+		return Point(x * k, y * k);
+	}
+};
+
+struct Line {
+	double a, b, c;
+
+	int read() {
+		Point p1, p2;
+		int ok = p1.read() + p2.read();
+		if (ok != 2)
+			return 0;
+		*this = Line(p1, p2);
+		return 1;
+	}
+
+	Line() : a(0), b(0), c(0) {}
+	Line(const Point &p1, const Point &p2) {
+		a = p1.y - p2.y;
+		b = p2.x - p1.x;
+		double d = sqrt(a * a + b * b);
+		if (fabs(d) < EPS)
+			throw("equal points");
+		a /= d, b /= d;
+		c = -(a * p1.x + b * p1.y);
+	}
+
+	inline double get(const Point &p) const {
+		return a * p.x + b * p.y + c;
+	}
+
+	void print() const {
+		printf("%.3lfx + %.3lfy + %.3lf = 0\n", a, b, c);
+	}
+};
+
+struct Circle {
+	Point center;
+	double r;
+
+	int read() {
+		int ok = center.read() + (scanf("%lf", &r) == 1);
+		return ok == 2;
+	}
+
+	void print() const {
+		printf("(x - %.3lf) ^ 2 + (y - %.3lf) ^ 2 = %.3lf ^ 2\n", center.x, center.y, r);
+	}
+};
+
+inline bool intersect(Line l, const Circle &c, Point *res, int &cnt) {
+	double distance = l.get(c.center);
+	if (distance < 0) {
+		distance = -distance;		
+		l.a = -l.a, l.b = -l.b, l.c = -l.c;
+	}
+
+	if (distance > c.r + EPS)
+		return false;
+
+	Point middle = c.center + (Point(l.a, l.b) * -distance);
+	
+	if (distance >= c.r - EPS) {
+		cnt = 1;
+		res[0] = middle;
+		return true;
+	}
+
+	cnt = 0;
+	for (int direction = -1; direction <= 1; direction += 2)
+		res[cnt++] = middle + (Point(l.b, -l.a) * (direction * sqrt(c.r * c.r - distance * distance)));	
+	return 1;
+}
+
+
+
+bool solve() {
+	Circle c;
+	Line l;
+	if (!c.read() || !l.read())
+		return 0;
+
+	Point inter[2];
+	int sizeInter;
+	if (intersect(l, c, inter, sizeInter)) {
+		printf("size of intersection is %d\n", sizeInter);
+		for (int i = 0; i < sizeInter; ++i)
+			inter[i].print();
+	} else
+		printf("there is no intersection! :(\n");
+	return 1;
+}
+
+int main() {
+	srand(rdtsc());
+#ifdef DEBUG
+	freopen(TASKNAME".in", "r", stdin);
+	freopen(TASKNAME".out", "w", stdout);
+#endif
+	
+	while (1) {
+		if (!solve())
+			break;
+		#ifdef DEBUG
+			eprintf("%.18lf\n", (double)clock() / CLOCKS_PER_SEC);
+		#endif
+	}
+	return 0;
+}
