@@ -1,0 +1,168 @@
+#include <iostream>
+#define n 100
+
+using namespace std;
+double q[n];
+class Vector
+{
+ public:
+     double v[n];
+     int norm;
+ public:
+     Vector(double vect[], int norm)
+         {
+            Set(vect,norm);
+         }
+    Vector()
+     {
+     }
+
+    void Print()
+        {
+            for (int i = 0;i < norm;i++) cout<<v[i]<<" ";
+            cout<<"\n";
+        }
+
+    void Set(double vNew[], int sizeNew)
+         {
+            norm = sizeNew;
+            for (int i = 0;i < norm;i++) v[i] = vNew[i];
+         }
+
+    int Size()
+         {
+            return(norm);
+         }
+
+    Vector operator+(Vector nVect) const
+        {
+            Vector Vect(q,norm);
+            for (int i = 0;i < norm;i++) Vect.v[i] = v[i] + nVect.v[i];
+            return(Vect);
+        }
+    
+    Vector operator-(Vector nVect) const
+        {
+            Vector Vect(q,norm);
+            for (int i = 0;i < norm;i++) Vect.v[i] = v[i] - nVect.v[i];
+            return(Vect);
+        }
+
+    Vector operator*(int a) const
+        {
+            Vector Vect(q,norm);
+            for (int i = 0;i < norm;i++) Vect.v[i] = a*v[i];
+            return(Vect);
+        }
+
+    Vector operator/(int a) const
+        {
+            Vector Vect(q,norm);
+            for (int i = 0;i < norm;i++) Vect.v[i] = v[i]/a;
+            return(Vect);
+        }
+    
+    bool operator==(Vector nVect) const
+        {
+            for (int i = 0;i < norm;i++) if (v[i] != nVect.v[i]) return(false);
+            else return(true);
+        }
+
+    void operator+=(Vector nVect) 
+        {
+            for (int i = 0;i < norm;i++) v[i] += nVect.v[i];
+        }
+
+    ~Vector()
+         {
+            delete[] v;
+         }
+};
+
+class Matrix
+{
+    public:
+            Vector* A;
+            int w, h;
+    public:
+        Matrix(int a, int b, Vector v[])
+             {
+                SetMatrix(a, b, v);
+             }
+    
+        Matrix()
+            {
+            }
+
+        void SetMatrix(int a, int b, Vector v[]) 
+        {
+            h = a;
+            w = b;
+            A = new Vector[b];
+            for(int i = 0;i < a;i++) A[i] = v[i];
+        }
+
+    int SizeH()
+         {
+            return(h);
+         }
+
+    int SizeW()
+         {
+            return(w);
+         }
+
+    Matrix Transponized()
+         {
+            Vector *z;
+            z = new Vector[w];
+            Vector zero(q,h);
+            for (int i = 0;i < h;i++)
+                 z[i] = zero;
+            Matrix M(w,h,z);
+            for(int i = 0;i < w;i++)
+                {
+                    for(int j = 0;j < h;j++)
+                    {
+                        M.A[i].v[j] = A[j].v[i];
+                    }
+                }
+            return M;
+        }
+
+    void Print()
+         {
+            for (int i = 0;i < h;i++)
+             {
+                A[i].Print();
+             }
+        }
+
+    ~Matrix()
+         {
+            delete[] A;
+         }
+};
+
+int main()
+ {
+    int u = 2, v = 2;
+    for (int i = 0;i < n;i++)
+         q[i] = 0;
+    Vector zero(q,u);
+    Vector *X;
+    X = new Vector[v];
+    for (int i = 0;i < v;i++)
+     X[i] = zero;
+    Matrix M(u,v,X);
+    for (int i = 0;i < u;i++)
+         {
+            for (int j = 0;j < v;j++)
+                 cin>>M.A[i].v[j];
+         }
+    M.Print();
+
+    Matrix T = M.Transponized();
+    T.Print();
+    return(0);
+}
