@@ -28,7 +28,7 @@ Matrix mod29( Matrix m ) {
 
 int inverse(int i, int mod) {
     for (int inv = 0; inv < mod; inv++) {
-        if (i * inv % mod == 0) {
+        if (i * inv % mod == 1) {
             return inv;
         }
     }
