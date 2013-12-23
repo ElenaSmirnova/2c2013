@@ -1,0 +1,91 @@
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+
+class Disk 
+{
+  public:
+    double x;
+    double y;
+    double R;
+  public:
+    Disk (double x_1, double y_1, double R_1)
+     {
+        setnumbers(x_1,y_1,R_1);
+     }
+    void setnumbers(double x_1, double y_1, double R_1)
+     {
+        x = x_1;
+        y = y_1;
+        R = R_1;
+     }
+    void print()
+     {
+        cout<<"x = "<<x<<", y = "<<y<<", R = "<<R<<"\n";
+     }
+};
+
+
+
+
+class Line
+{
+    public:
+        int k;
+        int b;
+    public:
+        Line(int k_1, int b_1)
+         {
+            setnumbers(k_1,b_1);
+         }
+        void setnumbers(int k_1, int b_1)
+         {
+            k = k_1;
+            b = b_1;
+         }
+        void print()
+         {
+            cout<<"k = "<<k<<", b = "<<b<<"\n";
+         }
+};
+
+class Solve
+{
+    public:
+        Solve(Line l, Disk  c)
+         {
+            solve(l.k,l.b,c.x,c.y,c.R);
+         }
+    void solve(double k, double b, double x, double y, double R)
+    {
+        double c1, c2, D;
+        D =(((x+k/b*b-(y*k)/b))*(x+k/b*b-(y*k)/b)-(1+(k)*(k)/((b)*(b)))*(x*x+(1/b-y)*(1/b-y)-R*R));
+        if(D<0)
+            {
+                cout<<"it's impossible";
+            }
+        else
+            {
+                c1=(x+(1/b-y)*k/b+sqrt(D))/(1+k*k/(b*b));
+                c2=(x+(1/b-y)*k/b-sqrt(D))/(1+k*k/(b*b));
+                cout<<"p1 = ("<<c1<<";"<<(c1*k+b)<<") p2 = ("<<c2<<";"<<(c2*k+b)<<")\n";
+            }
+    };
+};
+
+int main()
+{
+
+    double k, b, x ,y, R;
+    cout<<"Print k and b for the line: \n";
+    cin>>k; cin>>b;
+    cout<<"Print x, y and R for the disk: \n";
+    cin>>x; cin>>y; cin>>R;
+    Line line(k,b);
+    line.print();
+    Disk  Disk (x,y,R);
+    Disk .print();
+    Solve(line,Disk );
+    return(0);
+}
