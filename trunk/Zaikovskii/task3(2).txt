@@ -1,0 +1,15 @@
+@startuml
+
+Game <-- Robot
+
+Game: Robot bot
+Game: Symbol* Field
+Game: newGame()
+Game: nextTurn(int, int)
+
+Robot: void optimalTurn()
+Robot: name
+
+@enduml
+
+http://www.codeuml.com/
