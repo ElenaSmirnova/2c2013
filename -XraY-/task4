@@ -1,0 +1,388 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <algorithm>
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <string>
+#include <set>
+#include <map>
+#include <cassert>
+#include <ctime>
+
+
+using namespace std;
+
+#ifdef WIN32
+    #define LLD "%I64d"
+#else
+    #define LLD "%lld"
+#endif
+
+typedef pair<int, int> pii;
+typedef long long ll;
+typedef vector<int> vi;
+typedef vector<vi> vvi;
+typedef vector<bool> vb;
+typedef vector<vb> vvb;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+
+ll rdtsc() {
+    ll tmp;
+    asm("rdtsc" : "=A"(tmp));
+    return tmp;
+}
+
+inline int myrand() {
+	return abs((rand() << 15) ^ rand());
+}
+
+inline int rnd(int x) {
+	return myrand() % x;
+}
+
+#define TASKNAME "text"
+#define pb push_back
+#define mp make_pair
+#define EPS (1e-9)
+#define INF ((int)1e9)
+#define sqr(x) ((x) * (x))         
+#define eprintf(...) fprintf(stderr, __VA_ARGS__), fflush(stderr)
+#define sz(x) ((int)(x).size())
+
+const int MOD = (int)41;
+
+inline int mult(int x, int y) {
+	return (long long)x * y % MOD;
+}
+
+inline int myPower(int x, int pw) {
+	int res = 1;
+	for (; pw; pw >>= 1) {
+		if (pw & 1)
+			res = mult(res, x);
+		x = mult(x, x);
+	}
+	return res;
+}
+
+inline int invert(int x) {
+	if (!x)
+		throw "can't invert";
+	return myPower(x, MOD - 2);
+}
+
+void add(int &x, int y) {
+	if ((x += y) >= MOD)
+		x -= MOD;
+}
+
+
+template<typename T> class myVector {
+private:
+	int size;
+	T* data;
+	
+public:
+	myVector() : size(0), data(0) {}
+	
+	myVector(int needSize) : size(needSize), data(new T[size]) {}
+		
+	myVector(int needSize, const T& toAssign) : size(needSize), data(new T[size]) {
+		for (int i = 0; i < size; ++i)
+			data[i] = toAssign;
+	}
+
+	myVector(const myVector<T>& toCopy) : size(toCopy.size), data(new T[size]) {
+		memcpy(data, toCopy.data, sizeof(T) * size);
+	}
+
+	~myVector() {
+		delete[] data;
+	}
+
+
+	myVector& operator = (const myVector<T>& toCopy) {
+		size = toCopy.size;
+		data = new T[size];
+		memcpy(data, toCopy.data, sizeof(T) * size);
+		return *this;
+	}
+	
+	inline T& operator [] (const int index) {
+		if (index < 0 || index >= size)
+			throw "there is no such element!\n";
+		return data[index];
+	}
+
+	inline T& operator [] (const int index) const {
+		if (index < 0 || index >= size)
+			throw "there is no such element!\n";
+		return data[index];
+	}
+
+
+	inline bool operator == (const myVector &m) const {
+		if (size != m.size)
+			return false;
+ 		for (int i = 0; i < size; ++i)
+ 			if (data[i] != m.data[i])
+ 				return false;
+		return true;
+	}
+
+	inline void operator += (const myVector &m) {
+		if (size != m.size)
+			throw "different sizes";
+		for (int i = 0; i < size; ++i)
+			data[i] += m.data[i];
+	}
+
+	inline void operator *= (const T& toMult) {
+		for (int i = 0; i < size; ++i)
+			data[i] *= toMult;
+	}
+
+	inline int getSize() const {
+		return size;
+	}	
+};
+
+template<typename T> inline myVector<T> operator + (const myVector<T> &m1, const myVector<T> &m2) {
+	if (m1.size != m2.size)
+		throw "different sizes";
+	myVector<T> result(m1.size);
+	for (int i = 0; i < m1.size; ++i)
+		result[i] = m1.data[i] + m2.data[i];
+   	return result;
+}
+
+template<typename T> inline myVector<T> operator - (const myVector<T> &m1, const myVector<T> &m2) {
+	if (m1.size != m2.size)
+		throw "different sizes";
+	myVector<T> result(m1.size);
+	for (int i = 0; i < m1.size; ++i)
+		result[i] = m1.data[i] - m2.data[i];
+   	return result;
+}
+
+template<typename T> inline myVector<T> operator * (const myVector<T> &m1, const myVector<T> &m2) {
+	if (m1.size != m2.size)
+		throw "different sizes";
+	myVector<T> result(m1.size);
+	for (int i = 0; i < m1.size; ++i)
+		result[i] = m1.data[i] * m2.data[i];
+   	return result;
+}
+
+template<typename T> inline myVector<T> operator / (const myVector<T> &m1, const myVector<T> &m2) {
+	if (m1.size != m2.size)
+		throw "different sizes";
+	myVector<T> result(m1.size);
+	for (int i = 0; i < m1.size; ++i)
+		result[i] = m1.data[i] / m2.data[i];
+   	return result;
+}
+
+
+class Matrix {
+private:	
+	int height, width;
+	myVector<myVector<int> > data;
+
+public:
+	Matrix() : height(0), width(0), data(myVector<myVector<int> >(0)) {}
+	
+	Matrix(int needHeight, int needWidth) : height(needHeight), width(needWidth) {
+		data = myVector<myVector<int> >(needHeight, myVector<int>(needWidth));
+	}
+
+	Matrix(const Matrix& toCopy) : height(toCopy.height), width(toCopy.width) {
+		data = toCopy.data;
+	}
+
+	~Matrix() {}
+
+	inline Matrix operator * (Matrix &m) const {
+		if (width != m.height)
+			throw "can't multiply";
+		Matrix result(height, m.width);
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < m.width; ++j) {
+				int value = 0;
+				for (int k = 0; k < width; ++k)
+					add(value, mult(getValue(i, k), m.getValue(k, j)));	
+				result.setValue(i, j, value);
+			}	
+		}
+		return result;
+	}
+
+	inline int getHeight() const {
+		return height;	
+	}
+
+	inline int getWidth() const {
+		return width;	
+	}
+
+	inline pair<int, int> getSize() const {
+		return make_pair(height, width);
+	}
+
+	inline void setValue(int y, int x, int newValue) {
+		data[y][x] = newValue;
+	}
+
+	inline int getValue(int y, int x) const {
+		return data[y][x];
+	}
+
+	Matrix transpose() const {
+		Matrix result(width, height);
+		for (int i = 0; i < height; ++i)
+			for (int j = 0; j < width; ++j)
+				result.data[j][i] = data[i][j];
+		return result;	
+	}
+
+	inline int getDeterminant() const ;
+
+	Matrix getMinor(int y, int x) const ;
+	
+	Matrix invertMatrix() const ;
+};
+
+inline int Matrix::getDeterminant() const {
+	if (height != width)
+		throw "determinant is undefined";
+   	
+   	int n = height;
+   	
+   	if (n >= 10)
+   		throw "it's too long to count the determinant :(";
+   	
+   	int perm[n], used[n];
+   	for (int i = 0; i < n; ++i)
+   		perm[i] = i;	
+
+  	int ans = 0;
+   	do {
+		int sign = (n & 1);
+		for (int i = 0; i < n; ++i)
+			used[i] = 0;
+		for (int i = 0; i < n; ++i) {
+			if (used[i])
+				continue;
+			for (int x = i; !used[x]; x = perm[x])
+				used[x] = 1;
+			sign ^= 1;
+		}
+		int current = 1;
+		for (int i = 0; i < n; ++i)
+			current = mult(current, data[i][perm[i]]);	
+		add(ans, mult(MOD + (!sign ? 1 : -1), current));
+   	} while (next_permutation(perm, perm + n)) ;
+	return ans;
+}
+
+Matrix Matrix::invertMatrix() const {
+	int toDivide = invert(getDeterminant());
+	Matrix A = transpose();
+	int n = height;
+	Matrix result(n, n);
+	
+	if (n < 1)
+		throw "too small matrix :)";
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			int value = mult(A.getMinor(i, j).getDeterminant(), (MOD + (((i + j) & 1) ? -1 : 1)));
+			value = mult(value, toDivide);
+			result.data[i][j] = value;	
+		}
+	}
+	
+	return result;
+}
+
+
+inline Matrix Matrix::getMinor(int y0, int x0) const {
+	if (height < 1 || width < 1)
+		throw "there is no minor";
+
+	Matrix result(height - 1, width - 1);
+	for (int i = 0; i < height; ++i) {
+		if (i == y0)
+			continue;
+		for (int j = 0; j < width; ++j) {
+			if (j == x0)
+				continue;
+			result.data[i - (i >= y0)][j - (j >= x0)] = data[i][j];
+		}
+	}
+
+	return result;
+}
+
+Matrix a, inva;
+
+void precalc(int n) {
+  	a = Matrix(n, n);
+  	for (int i = 0; i < n; ++i)
+  		for (int j = 0; j < n; ++j)
+  			a.setValue(i, j, rnd(20) + 1);
+	try {
+		inva = a.invertMatrix();
+	} catch(const char* s) {
+		eprintf("bad run seed;\n%s\n", s);
+		throw s;
+	}
+}
+
+const int maxn = 9;
+char s[maxn + 1], q[maxn + 1];
+
+bool solve() {
+	if (scanf("%s", s) < 1)
+		return 0;
+	int n = strlen(s);
+	assert(n <= maxn);
+	
+	precalc(n);
+	
+	Matrix col(n, 1);
+	for (int i = 0; i < n; ++i)
+		col.setValue(i, 0, s[i] - 'a');
+	Matrix b = a * col;
+	for (int i = 0; i < n; ++i)
+		q[i] = 'a' + b.getValue(i, 0);
+	q[n] = 0;
+	printf("%s\n", q);
+
+	Matrix c = inva * b;
+	for (int i = 0; i < n; ++i)
+		q[i] = 'a' + c.getValue(i, 0);
+	q[n] = 0;
+	assert(!strcmp(s, q));
+	return 1;
+}
+
+int main() {
+	srand(23);
+#ifdef DEBUG
+	freopen(TASKNAME".in", "r", stdin);
+	freopen(TASKNAME".out", "w", stdout);
+#endif
+	
+	while (1) {
+		if (!solve())
+			break;
+		#ifdef DEBUG
+			eprintf("%.18lf\n", (double)clock() / CLOCKS_PER_SEC);
+		#endif
+	}
+	return 0;
+}
