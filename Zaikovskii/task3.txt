@@ -1,0 +1,23 @@
+@startuml
+
+(*) -down-> "Check availability \n of components for coffee"
+If ""
+-right-> [enough] "Waiting for money"
+else
+--> [not enough] (*)
+endIf
+"Waiting for money" -left-> "Check"
+If "" then
+-up-> [enough] "Do coffee"
+-right-> "Give change"
+-> "Check availability \n of components for coffee"
+else
+-right->[not enough] "Print <<Not enough money>>"
+--> "Waiting for money"
+endIf
+
+
+@enduml
+
+
+http://www.codeuml.com/
