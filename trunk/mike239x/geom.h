@@ -21,7 +21,6 @@ class Line {
 	Line (double a, double b) {
 		setA(a); 
 		setB(b);
-		print();
 	}
 	void print() {
 		printf("y = %gx+%g\n", a, b);
@@ -50,7 +49,6 @@ class Circle {
 		setR(R); 
 		setCX(cx);
 		setCY(cy);
-		print();
 	}
 	void print() {
 		printf("(x-%g)^2 + (y-%g)^2 = %g^2\n", cx, cy , R);
@@ -62,14 +60,12 @@ double* intersection(Line l, Circle c) {
 	double B = -2*(c.getCX() - (l.getB()-c.getCY())*l.getA());
 	double K = c.getCX()*c.getCX() + (l.getB() - c.getCY())*(l.getB() - c.getCY()) - c.getR()*c.getR();
 	double D = B*B - 4*A*K;
-	printf("%gXX + %gX + %g = 0\n",A,B,K,D);
 	if (D < 0) {
 		return 0;
 	}
 	D = sqrt(D);
 	double x1 = (-B+D)/(2*A);
 	double x2 = (-B-D)/(2*A);
-	printf("x1 = %g, x2 = %g\n",x1,x2);
 	double y1 = l.getA() * x1 + l.getB();
 	double y2 = l.getA() * x2 + l.getB();
 	double* result = new double[4];
