@@ -1,3 +1,4 @@
+//Азбиль Александр
 #include <iostream>
 #include <cmath>
 
