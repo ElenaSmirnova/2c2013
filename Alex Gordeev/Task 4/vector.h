@@ -10,46 +10,44 @@
 #include <map>
 #include <vector>
 #include <iomanip>
+#include "common.h"
 
 using namespace std;
 
-typedef long long ll;
-typedef long double ldb;
+typedef unsigned int uint;
 
 #define forab(i, a, b) for(int i = int(a); i < int(b); ++i)
 #define forn(i, n) for(int i = 0; i < int(n); ++i)
 #define forba(i, b, a) for(int i = int(b) - 1; i >= int(a); --i)
 
-const ldb EPS = 1e-9;
-
 class Vector {
 private:
-	ldb *data;
+	uint *data;
 	int size;
 public:
 	Vector(): size(0), data(NULL) {}
-	Vector(int size): size(size), data(new ldb[size]) {
+	Vector(int size): size(size), data(new uint[size]) {
 		clear();
 	}
-	Vector(const Vector & v): size(v.size), data(new ldb[size]) {
-		memcpy(data, v.data, sizeof(ldb) * size);
+	Vector(const Vector & v): size(v.size), data(new uint[size]) {
+		memcpy(data, v.data, sizeof(uint) * size);
 	}
 	~Vector() {
 		delete[] data;
 	}
 	void clear() {
-		memset(data, 0, sizeof(ldb) * size);
+		memset(data, 0, sizeof(uint) * size);
 	}
-	int size() const {
+	int getSize() const {
 		return size;
 	}
-	void normalize(newSize) {
+	void normalize(const int newSize) {
 		if (size >= newSize)
 			return;
-		ldb *old = data;
+		uint *old = data;
 		int oldSize = size;
 		size = newSize;
-		data = new ldb[newSize];
+		data = new uint[newSize];
 		clear();
 		forn(i, oldSize)
 			data[i] = old[i];
@@ -58,16 +56,16 @@ public:
 	Vector & operator =(const Vector & v) {
 		size = v.size;
 		delete[] data;
-		data = new ldb[size];
-		memcpy(data, v.data, sizeo(ldb) * size);
+		data = new uint[size];
+		memcpy(data, v.data, sizeof(uint) * size);
 		return *this;
 	}
-	ldb & operator[](const int index) const {
-		if (index < 0 || index >= size)
+	uint & operator[](const int ind) const {
+		if (ind < 0 || ind >= size)
 			throw("Invalid index\n");
-		return data[index];
+		return data[ind];
 	}
-	ldb & operator[](const int index) {
+	uint & operator[](const int index) {
 		if (index < 0 || index >= size)
 			throw("Invalid index\n");
 		return data[index];
@@ -76,36 +74,42 @@ public:
 		if (size != v.size)
 			return false;
 		forn(i, size)
-			if (abs(data[i] - v.data[i]) > EPS)
+			if (data[i] != v.data[i])
 				return false;
 		return true;
 	}
 	Vector & operator +=(const Vector & v) {
 		normalize(v.size);
 		forn(i, v.size)
-			data[i] += v.data[i];
+			data[i] = (data[i] + v.data[i]) % MOD;
 		return *this;
 	}
 	Vector operator +(const Vector & v) const {
-		Vector result(max(size, v.size));
-		result += *this;
-		result += v;
-		return result;
+		Vector res(max(size, v.size));
+		res += *this;
+		res += v;
+		return res;
 	}
 	Vector operator -(const Vector & v) const {
-		Vector result = v;
-		forn(i, result.size)
-			result.data[i] = -result.data[i];
-		result += *this;
-		return result;
+		Vector res(v);
+		forn(i, res.size)
+			res.data[i] = (-res.data[i] + MOD) % MOD;
+		res += *this;
+		return res;
 	}
-	Vector operator *(const ldb & mult) const {
-		Vector result = *this;
-		forn(i, result.size)
-			result.data[i] *= mult;
-		return result;
+	Vector operator *(const uint & mult) const {
+		Vector res(*this);
+		forn(i, res.size)
+			res.data[i] = (res.data[i] * mult) % MOD;
+		return res;
 	}
-	Vector operator /(const ldb & mult) const {
-		return *this * (1.0L / mult);
+	Vector operator /(const uint & mult) const {
+		return *this * invert(mult);
+	}
+	uint dotProduct(const Vector & v) const {
+		uint res = 0;
+		forn(i, min(size, v.size))
+			res = (res + data[i] * v.data[i]) % MOD;
+		return res;
 	}
 };
