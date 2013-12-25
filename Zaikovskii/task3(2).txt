@@ -1,15 +1,35 @@
 @startuml
 
-Game <-- Robot
 
-Game: Robot bot
-Game: Symbol* Field
-Game: newGame()
-Game: nextTurn(int, int)
+Robot -down-> Game
 
-Robot: void optimalTurn()
-Robot: name
+PlayerInput -up-> Game
+
+Strategy -right-> Robot
+
+Game -right-> Output
+
+GameBoard -right-> Game
+
+Game: -GameBoard board
+Game: -Robot bot
+Game: +newGame()
+Game: +playerTurn()
+Game: +botTurn()
+Game: +endGame()
+
+GameBoard: -int Size
+GameBoard: -int* board
+GameBoard: +void clean()
+GameBoard: +Turn(int x, int y)
+GameBoard: +void Show()
+
+Robot: +void optimalTurn()
+Robot: +String name
+Robot: -Strategy strategy
+
+
 
 @enduml
 
-http://www.codeuml.com/
+http://www.plantuml.com/plantuml/form
